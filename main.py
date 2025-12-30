@@ -323,7 +323,7 @@ class enemy:
             self.hitTimer = self.attackDelay
         angle = math.atan2(p.y - self.y, p.x - self.x)
         p.xVel += math.cos(angle)
-        p.yVel += math.cos(angle)
+        p.yVel += math.sin(angle)
     def specialUpdate(self):
         pass
     def update(self):
@@ -866,4 +866,5 @@ while run:
         upgradeSelections[1].draw(1)
     pygame.display.update()
     clock.tick(60)
+
 pygame.quit()
