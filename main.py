@@ -79,7 +79,7 @@ class bullet:
         self.force = force
         self.effects = effects
         self.lifeTime = lifeTime
-        self.pierce = pierce
+        self.pierce = Pierre
         self.enemyList = []
         self.augments = {}
     def draw(self):
@@ -868,3 +868,4 @@ while run:
     clock.tick(60)
 
 pygame.quit()
+
