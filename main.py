@@ -4,7 +4,9 @@ import random
 
 pygame.init()
 pygame.font.init()
-width, height = 1200, 600
+width, height = 1800, 900
+
+halfWidth, halfHeight = width/2, height/2
 
 win = pygame.display.set_mode((width, height))
 particleSurface = pygame.Surface((width, height), pygame.SRCALPHA)
@@ -105,7 +107,7 @@ class bullet:
         if enemy in enemys and not enemy in self.enemyList:
             enemy.squish += (abs(math.cos(self.angle)) - abs(math.sin(self.angle))) * (self.force / 3) / enemy.weight
             enemy.squash += (abs(math.sin(self.angle)) - abs(math.cos(self.angle))) * (self.force / 3) / enemy.weight
-            particles.append(particle(self.x-(enemy.xVel/2), self.y-(enemy.yVel/2), enemy.xVel, enemy.yVel, "circle", [self.color[0], self.color[1], self.color[2], 196], 6, 10, 0.4, fade=25.5, drag=enemy.drag))
+            particles.append(particle(self.x-(enemy.xVel/2), self.y-(enemy.yVel/2), enemy.xVel, enemy.yVel, "circle", [self.color[0], self.color[1], self.color[2], 196], 6, 10, 0.6, fade=25.5, drag=enemy.drag))
             enemy.damaged(self.damage)
             enemy.xVel += math.cos(self.angle) * (self.force / enemy.weight)
             enemy.yVel += math.sin(self.angle) * (self.force / enemy.weight)
@@ -515,7 +517,7 @@ class player:
         self.xVel = 0
         self.yVel = 0
         self.level = 0
-        self.maxXP = 60
+        self.maxXP = 50
     def update(self, keys, mousePos, mousePressed):
         moveDir = [0, 0]
         if keys["left"]:
@@ -633,18 +635,18 @@ class upgrade:
         pass
     def draw(self, index):
         zi = 1-(upgradeTimer / 60)
-        pygame.draw.rect(win, (self.color[1][0]*zi, self.color[1][1]*zi, self.color[1][2]*zi), (index * 600, 0, width/2, height))
-        pygame.draw.rect(win, (self.color[0][0]*zi, self.color[0][1]*zi, self.color[0][2]*zi), (index * 600, 0, width/2, height), 6)
+        pygame.draw.rect(win, (self.color[1][0]*zi, self.color[1][1]*zi, self.color[1][2]*zi), (index * halfWidth, 0, width/2, height))
+        pygame.draw.rect(win, (self.color[0][0]*zi, self.color[0][1]*zi, self.color[0][2]*zi), (index * halfWidth, 0, width/2, height), 6)
         font = pygame.font.SysFont('Roboto', 30)
         text = font.render(self.name, True, (self.color[0][0]*zi, self.color[0][1]*zi, self.color[0][2]*zi))
         textRect = text.get_rect()
-        textRect.center = ((index * 600) + 300, height / 4)
+        textRect.center = ((index * halfWidth) + (halfWidth/2), height / 4)
         win.blit(text, textRect)
 
         font = pygame.font.SysFont('Roboto', 20)
         text = font.render(self.description, True, (self.color[0][0]*zi, self.color[0][1]*zi, self.color[0][2]*zi))
         textRect = text.get_rect()
-        textRect.center = ((index * 600) + 300, height / 3)
+        textRect.center = ((index * halfWidth) + (halfWidth/2), height / 3)
         win.blit(text, textRect)
 
 class uStrongBullet(upgrade):
@@ -701,7 +703,7 @@ class uHeavyMagazine(upgrade):
         super().__init__("Heavy Magazine", [(0, 0, 0), (20,20,20)], "2x mag size, increses spread", {}, {"reloadSpeed" : 1.6, "firerate" : 1.1, "bulletSpread" : 2, "bulletSpeedSpread" : 1.2, "magSize" : 2}, {"color" : (30,30,30), "speed" : 0.9}, [])
 class uSlugger(upgrade):
     def __init__(self):
-        super().__init__("Slugger", [(128,128,128), (64,128,64)], "x3 impactfull", {}, {"magSize" : 0.8, "firerate" : 1.5}, {"force" : 3, "speed" : 0.5, "damage" : 1.2, "color" : (255,255,255), "size" : 1.3, "trailLength" : 0.8, "lifeTime" : 1.2}, [])
+        super().__init__("Slugger", [(128,128,128), (64,128,64)], "x2 impactfull", {}, {"magSize" : 0.85, "firerate" : 1.5}, {"force" : 2, "speed" : 0.6, "damage" : 1.2, "color" : (255,255,255), "size" : 1.3, "trailLength" : 0.8, "lifeTime" : 1.2}, [])
 upgrades = [uStrongBullet(), uExtraBullet(), uExtendedMag(), uFasterFirerate(), uFasterReload(), uSpicyBullets(), uHighDamageBullets(), uAccuracy(), 
             uPeirce(), uWomboCombo(), uChillyBullets(), uShotGun(), uSpray(), uLazer(), uHeavyMagazine(), uSlugger()]
 
@@ -818,7 +820,7 @@ while run:
                     upgrading = True
                     upgradeSelections = [*random.choices(upgrades), *random.choices(upgrades)]
                     p.level -= p.maxXP
-                    p.maxXP *= 1.13
+                    p.maxXP *= 1.14
                 pickups.remove(i)
             angle = math.atan2(p.y + (p.size/2) - i[1], p.x + (p.size/2) - i[0])
             i[0] += (math.cos(angle) / min(dist, 200)) * 150
@@ -848,7 +850,8 @@ while run:
         y = (i * 80 - camY * 0.2) % height
         pygame.draw.circle(win, (10, 10, 20), (x, y), 2)
     pygame.draw.rect(win, (min(round(abs(p.x / 1000)), 255), min(round(abs(p.y / 1000)), 255), 30), ((-camX % (height+20))-20, 0, 20, height))
-    pygame.draw.rect(win, (min(round(abs(p.x / 1000)), 255), min(round(abs(p.y / 1000)), 255), 30), ((-camX % (height+20))+600, 0, 20, height))
+    pygame.draw.rect(win, (min(round(abs(p.x / 1000)), 255), min(round(abs(p.y / 1000)), 255), 30), ((-camX % (height+20))+halfWidth, 0, 20, height))
+
     pygame.draw.rect(win, (min(round(abs(p.x / 1000)), 255), min(round(abs(p.y / 1000)), 255), 30), (0, (-camY % (height+20))-20, width, 20))
     p.draw()
     for i in pickups:
